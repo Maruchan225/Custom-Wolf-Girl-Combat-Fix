@@ -45,6 +45,12 @@ Alternatively, create `GirlPoolCombatFix.local.props` next to the project:
 
 The local properties file is excluded from Git to keep machine-specific paths private.
 
+Algorithm: SHA256
+
+Hash: 8617C5E6427259ADFA149CC7544225D5CB71B21508B3313CFCECB82A2752A538
+
+https://www.virustotal.com/gui/file/8617c5e6427259adfa149cc7544225d5cb71b21508b3313cfcecb82a2752a538
+
 ## Credits
 
 Fix made with help from Codex.
