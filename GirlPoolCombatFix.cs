@@ -45,9 +45,7 @@ public sealed class GirlPoolCombatFixPlugin : BaseUnityPlugin
 }
 
 
-// ============================================================
-// PATCH GATCombatBaseBehavior.Attack
-// ============================================================
+// Patch GATCombatBaseBehavior.Attack
 
 [HarmonyPatch(
     typeof(GATCombatBaseBehavior),
@@ -77,7 +75,6 @@ internal static class GATCombatBaseBehavior_Attack_Patch
             );
 
 
-    // ========================================================
     // TRANSPILER
     //
     // ORIGINAL:
@@ -86,7 +83,7 @@ internal static class GATCombatBaseBehavior_Attack_Patch
     // ldarg.3
     // bne.un ...
     //
-    // NUEVO:
+    // NEW:
     //
     // GetTemplateIndexForCombatComparison(
     //     gat,
@@ -95,7 +92,6 @@ internal static class GATCombatBaseBehavior_Attack_Patch
     // )
     // ldarg.3
     // bne.un ...
-    // ========================================================
 
     private static IEnumerable<CodeInstruction>
         Transpiler(
@@ -127,9 +123,8 @@ internal static class GATCombatBaseBehavior_Attack_Patch
                 )
             )
             {
-                // Queremos específicamente la llamada
-                // cuya siguiente instrucción compara
-                // contra arg.3 = templateIndex.
+                // We specifically want the call whose next
+                // instruction compares against arg.3 = templateIndex.
 
                 bool followedByTemplateIndex =
                     i + 1 < code.Count
@@ -140,14 +135,14 @@ internal static class GATCombatBaseBehavior_Attack_Patch
 
                 if (followedByTemplateIndex)
                 {
-                    // Antes de esta instrucción el stack
-                    // ya contiene:
+                    // Before this instruction, the stack
+                    // already contains:
                     //
                     // GAT
                     // Handle
                     //
-                    // Añadimos templateIndex y llamamos
-                    // nuestro método compatible.
+                    // Add templateIndex and call our
+                    // compatibility method.
 
                     yield return new CodeInstruction(
                         OpCodes.Ldarg_3
@@ -179,9 +174,7 @@ internal static class GATCombatBaseBehavior_Attack_Patch
     }
 
 
-    // ========================================================
-    // COMPARACIÓN COMPATIBLE
-    // ============================================================
+    // Compatible comparison
 
     private static int
         GetTemplateIndexForCombatComparison(
@@ -196,7 +189,7 @@ internal static class GATCombatBaseBehavior_Attack_Patch
             );
 
 
-        // Comportamiento normal.
+        // Normal behavior.
         if (
             actualTemplateIndex
             == requestedTemplateIndex
@@ -226,8 +219,8 @@ internal static class GATCombatBaseBehavior_Attack_Patch
                 );
 
 
-            // Solo relajamos la comparación si
-            // AMBOS pertenecen a las wolf girls.
+            // Only relax the comparison when BOTH templates
+            // belong to the wolf girls.
             if (
                 GirlTemplateDetector.IsGirlTemplate(
                     actualTemplate
@@ -248,8 +241,8 @@ internal static class GATCombatBaseBehavior_Attack_Patch
                 );
 
 
-                // Devolvemos el índice que Attack()
-                // espera comparar.
+                // Return the index Attack() expects
+                // to compare against.
                 return requestedTemplateIndex;
             }
         }
@@ -263,20 +256,18 @@ internal static class GATCombatBaseBehavior_Attack_Patch
         }
 
 
-        // Para cualquier otro animal/template:
-        // comportamiento vanilla intacto.
+        // For any other animal/template:
+        // keep vanilla behavior intact.
         return actualTemplateIndex;
     }
 }
 
 
-// ============================================================
-// DETECTOR DE TEMPLATES GIRLPOOL
+// GirlPool template detector
 //
-// No resolvemos CustomModelsLoader durante el inicio.
-// Se resuelve cuando realmente ocurre un ataque,
-// cuando el mod ya está cargado.
-// ============================================================
+// Do not resolve CustomModelsLoader during startup.
+// Resolve it when an attack actually happens,
+// after the mod has already loaded.
 
 internal static class GirlTemplateDetector
 {
@@ -353,9 +344,7 @@ internal static class GirlTemplateDetector
             return false;
 
 
-        // ====================================================
         // Vanilla worker template
-        // ====================================================
 
         try
         {
@@ -390,10 +379,8 @@ internal static class GirlTemplateDetector
         }
 
 
-        // ====================================================
-        // Si CustomModelsLoader posee IsGirlTemplate,
-        // usamos directamente su propia lógica.
-        // ====================================================
+        // If CustomModelsLoader exposes IsGirlTemplate,
+        // use its own logic directly.
 
         if (_isGirlTemplateMethod != null)
         {
@@ -424,9 +411,7 @@ internal static class GirlTemplateDetector
         }
 
 
-        // ====================================================
-        // Vanilla template interno del GirlPool
-        // ====================================================
+        // GirlPool's internal vanilla template
 
         if (_vanillaTemplateField != null)
         {
@@ -456,9 +441,7 @@ internal static class GirlTemplateDetector
         }
 
 
-        // ====================================================
-        // Buscar dentro de _slots
-        // ====================================================
+        // Search inside _slots
 
         if (_slotsField != null)
         {
@@ -501,12 +484,10 @@ internal static class GirlTemplateDetector
     }
 
 
-    // ========================================================
-    // El slot puede ser:
+    // The slot may be:
     //
     // Template
-    // o una clase/struct que contenga Template.
-    // ========================================================
+    // or a class/struct containing a Template.
 
     private static bool ContainsTemplate(
         object item,
